@@ -141,7 +141,7 @@ d.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 5000);
 
     function showModalByTab(){
         if (window.pageYOffset + d.documentElement.clientHeight >= d.documentElement.scrollHeight) {
@@ -226,4 +226,34 @@ d.addEventListener('DOMContentLoaded', () => {
         '.menu .container',
         "menu__item"
     ).render();
+
+    //forms
+    const forms = d.querySelectorAll('form');
+    const message = {
+        loading : 'Идёт загрузка, пожалуйста, подождите',
+        success : 'Данные получены',
+        failure : 'Что-то пошло не так'
+    };
+
+    forms.forEach(item => {
+        console.log(item);
+        sendForm(item);
+    });
+    
+    function sendForm(form){
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            console.log(message.loading);   
+            
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            const formData = new FormData(form);
+            
+            const obj = {};
+            formData.forEach((value, key)=>{
+
+            });
+        });
+    }
+    
 });
