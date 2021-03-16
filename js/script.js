@@ -247,12 +247,31 @@ d.addEventListener('DOMContentLoaded', () => {
             
             const request = new XMLHttpRequest();
             request.open('POST', 'server.php');
+
+            // request.setRequestHeader('Content-type', 'multipart/form-data');
             const formData = new FormData(form);
             
-            const obj = {};
-            formData.forEach((value, key)=>{
+            request.send(formData);
 
+            request.addEventListener('load', () => {
+                if (request.status === 200){
+                    console.log(request.response);
+                    console.log(message.success);
+                } else {
+                    console.log(message.failure);
+                }
             });
+
+
+
+
+
+
+            // const obj = {};
+            // formData.forEach((value, key)=>{
+
+            // });
+
         });
     }
     
