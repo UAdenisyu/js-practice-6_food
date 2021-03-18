@@ -127,10 +127,8 @@ d.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    modalCloseBtn.addEventListener('click', closeModal);
-
     modalWindow.addEventListener('click', (e) => {
-        if (e.target === modalWindow){
+        if (e.target === modalWindow || e.target.getAttribute('data-close') == ''){
             closeModal();
         }
     });
@@ -141,7 +139,7 @@ d.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 50000);
 
     function showModalByTab(){
         if (window.pageYOffset + d.documentElement.clientHeight >= d.documentElement.scrollHeight) {
@@ -239,33 +237,39 @@ d.addEventListener('DOMContentLoaded', () => {
         console.log(item);
         sendForm(item);
     });
-    
+
+
+
     function sendForm(form){
         form.addEventListener('submit', e => {
             e.preventDefault();
-            console.log(message.loading);   
+            // showThankyouModal(message.loading);
             
             const request = new XMLHttpRequest();
             request.open('POST', 'server.php');
 
-            // request.setRequestHeader('Content-type', 'multipart/form-data');
+            request.setRequestHeader('Content-type', 'application/json');
             const formData = new FormData(form);
-            
-            request.send(formData);
+
+            const obj = {};
+            formData.forEach(function(value, key){
+                obj[key] = value;
+            });
+            const json = JSON.stringify(obj);
+
+            request.send(json);
 
             request.addEventListener('load', () => {
+                
                 if (request.status === 200){
                     console.log(request.response);
-                    console.log(message.success);
+                    showThankyouModal(message.success);
+                    form.reset();
+                    
                 } else {
-                    console.log(message.failure);
+                    showThankyouModal(message.failure);
                 }
             });
-
-
-
-
-
 
             // const obj = {};
             // formData.forEach((value, key)=>{
@@ -275,4 +279,33 @@ d.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    //forms update
+        
+    function showThankyouModal(message){
+        const prevModalDialog = d.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        prevModalDialog.classList.remove('show');
+        openModal();//открывает все модальные окна
+
+        const thankyouModal = d.createElement('div');
+        thankyouModal.classList.add('modal__dialog');
+        thankyouModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+
+        thankyouModal.classList.add('fade');
+        d.querySelector('.modal').append(thankyouModal);
+        // проблема при повторном запуске модалки после отправления данных с предыдущей
+        setTimeout(()=>{
+            thankyouModal.remove();
+            prevModalDialog.classList.remove('hide');
+            prevModalDialog.classList.add('show');
+            closeModal();
+        }, 4000);
+    } 
+
 });
