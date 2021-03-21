@@ -232,55 +232,10 @@ d.addEventListener('DOMContentLoaded', () => {
         success : 'Данные получены',
         failure : 'Что-то пошло не так'
     };
-
-    forms.forEach(item => {
-        console.log(item);
-        sendForm(item);
-    });
-
-
-
-    function sendForm(form){
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            // showThankyouModal(message.loading);
-            
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-
-            request.setRequestHeader('Content-type', 'application/json');
-            const formData = new FormData(form);
-
-            const obj = {};
-            formData.forEach(function(value, key){
-                obj[key] = value;
-            });
-            const json = JSON.stringify(obj);
-
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                
-                if (request.status === 200){
-                    console.log(request.response);
-                    showThankyouModal(message.success);
-                    form.reset();
-                    
-                } else {
-                    showThankyouModal(message.failure);
-                }
-            });
-
-            // const obj = {};
-            // formData.forEach((value, key)=>{
-
-            // });
-
-        });
-    }
     
-    //forms update
-        
+
+
+
     function showThankyouModal(message){
         const prevModalDialog = d.querySelector('.modal__dialog');
 
@@ -308,4 +263,40 @@ d.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     } 
 
+    function sendForm(form){
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+
+            const formData = new FormData(form);
+            const obj = {};
+            formData.forEach((value, key) => {
+                obj[key] = value;
+            });
+
+            fetch('server.php', {
+                method: "POST",
+                body: JSON.stringify(obj),
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            })
+            .then(data => data.text())
+            .then(data => {
+                console.log(data);
+                showThankyouModal(message.success);
+            })
+            .catch(() => {
+                showThankyouModal(message.failure);
+            })
+            .finally(() => {
+                form.reset();
+            });
+        });
+    }
+    
+    forms.forEach(item => {
+        console.log(item);
+        sendForm(item);
+    });
 });
