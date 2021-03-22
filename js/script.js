@@ -301,4 +301,60 @@ d.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    //slider 1
+
+
+
+    const sliderSlides = d.querySelectorAll('.offer__slide'),
+          sliderCounterPrevButton = d.querySelector('.offer__slider-prev'),
+          sliderCounterNextButton = d.querySelector('.offer__slider-next'),
+          sliderCounterTotalNum = d.getElementById('total'),
+          sliderCounterCurrentNum = d.getElementById('current');
+    
+    let currentSlideIndex = 0,
+        totalSlideAmount = 0;
+
+    sliderSlides.forEach(slide => {
+        totalSlideAmount += 1;
+        slide.classList.add('hide');
+        
+    });
+
+    //Начальные настройки слайдера по умолчанию
+    // sliderSlides[0].classList.remove('hide');
+    // sliderSlides[0].classList.add('show', 'fade');
+    sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
+    sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
+
+
+    function setSlide(i = 0){
+        //прячем текущий слайд
+        sliderSlides[currentSlideIndex].classList.add('hide');
+        sliderSlides[currentSlideIndex].classList.remove('show');
+        //переключаемся на следующий/предыдущий слайд и показываем его
+        if (i >= totalSlideAmount){
+            i = 0;
+        }
+        else if (i < 0){
+            i = totalSlideAmount - 1;
+        }
+        currentSlideIndex = i;
+        sliderSlides[currentSlideIndex].classList.remove('hide');
+        sliderSlides[currentSlideIndex].classList.add('show', 'fade');
+        //визуальное изменение счётчика
+        sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
+    }
+
+    setSlide();
+    console.log(sliderCounterCurrentNum);
+
+    sliderCounterNextButton.addEventListener('click', ()=>{
+        setSlide(currentSlideIndex+1);
+    });
+    
+    sliderCounterPrevButton.addEventListener('click', ()=>{
+        setSlide(currentSlideIndex-1);
+    });
+    
+
 });
