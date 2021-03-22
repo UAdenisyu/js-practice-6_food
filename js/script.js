@@ -203,12 +203,22 @@ d.addEventListener('DOMContentLoaded', () => {
         return await res.json();//json-формат
     };
 
-    getResourses('http://localhost:3000/menu').
-    then(data => {
-        data.forEach(({img, altimg, title, descr, price}) => {
+    //getResourses() without axios
+
+    // getResourses('http://localhost:3000/menu').
+    // then(data => {
+    //     data.forEach(({img, altimg, title, descr, price}) => {
+    //         new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+    //     });
+    // });
+
+    axios.get('http://localhost:3000/menu')
+    .then(data => {
+            data.data.forEach(({img, altimg, title, descr, price}) => {
             new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
         });
     });
+
 
     //forms
     const forms = d.querySelectorAll('form');
@@ -273,7 +283,7 @@ d.addEventListener('DOMContentLoaded', () => {
 
             postData('http://localhost:3000/requests', json)
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 showThankyouModal(message.success);
             })
             .catch(() => {
