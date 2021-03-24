@@ -346,7 +346,7 @@ d.addEventListener('DOMContentLoaded', () => {
     }
 
     function switchPrevSlide(step = 1){
-        if ((offset == 0) || slideIndex-step <= 0){
+        if ((offset == 0) || slideIndex-step < 0){
             offset = +width.slice(0, -2) * (sliderSlides.length - 1);
             slideIndex = sliderSlides.length - 1;
         }
