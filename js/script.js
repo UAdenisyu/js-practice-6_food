@@ -49,7 +49,7 @@ d.addEventListener('DOMContentLoaded', () => {
 
     //timer
 
-    const deadLine = '2021-03-18';
+    const deadLine = '2021-04-18';
 
     function getTimeRemaining(endTime){
         const t = Date.parse(endTime) - Date.parse(new Date()),//miliseconds differense
@@ -139,7 +139,7 @@ d.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    const modalTimerId = setTimeout(openModal, 50000);
+    // const modalTimerId = setTimeout(openModal, 50000);
 
     function showModalByTab(){
         if (window.pageYOffset + d.documentElement.clientHeight >= d.documentElement.scrollHeight) {
@@ -296,65 +296,150 @@ d.addEventListener('DOMContentLoaded', () => {
     }
     
     forms.forEach(item => {
-        console.log(item);
+        // console.log(item);
         bingPostData(item);
     });
 
 
-    //slider 1
-
-
+    //slider 1, 2
 
     const sliderSlides = d.querySelectorAll('.offer__slide'),
           sliderCounterPrevButton = d.querySelector('.offer__slider-prev'),
           sliderCounterNextButton = d.querySelector('.offer__slider-next'),
           sliderCounterTotalNum = d.getElementById('total'),
-          sliderCounterCurrentNum = d.getElementById('current');
-    
-    let currentSlideIndex = 0,
-        totalSlideAmount = 0;
+          sliderCounterCurrentNum = d.getElementById('current'),
+          sliderWrapper = d.querySelector('.offer__slider-wrapper'),
+          sliderField = d.querySelector('.offer__slider-inner');
+          width = window.getComputedStyle(sliderWrapper).width;
 
-    sliderSlides.forEach(slide => {
-        totalSlideAmount += 1;
-        slide.classList.add('hide');
-        
+    let slideIndex = 0;
+    let offset = 0;
+    const totalSlideAmount = sliderSlides.length;
+
+    sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
+    sliderCounterCurrentNum.textContent = `${setZero(slideIndex+1)}`;
+
+    sliderField.style.width = 100 * sliderSlides.length + '%';
+    sliderField.style.display = 'flex';
+    sliderField.style.transition = '1s all';
+    sliderWrapper.style.overflow = 'hidden';
+
+    sliderSlides.forEach((slide) => {
+        slide.style.width = width;
     });
 
-    //Начальные настройки слайдера по умолчанию
-    // sliderSlides[0].classList.remove('hide');
-    // sliderSlides[0].classList.add('show', 'fade');
-    sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
-    sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
-
-
-    function setSlide(i = 0){
-        //прячем текущий слайд
-        sliderSlides[currentSlideIndex].classList.add('hide');
-        sliderSlides[currentSlideIndex].classList.remove('show');
-        //переключаемся на следующий/предыдущий слайд и показываем его
-        if (i >= totalSlideAmount){
-            i = 0;
+    //добавление автоматического перелистывания слайдера
+    let switchInterval,
+        autoSlidesSwitching = true;//для отключения автоперелистывания поставить false
+    
+    function resetAutoSwitch(ms = 8000){
+        if (autoSlidesSwitching == true){
+            clearInterval(switchInterval);
+            switchInterval = setInterval(switchNextSlide, ms);
         }
-        else if (i < 0){
-            i = totalSlideAmount - 1;
-        }
-        currentSlideIndex = i;
-        sliderSlides[currentSlideIndex].classList.remove('hide');
-        sliderSlides[currentSlideIndex].classList.add('show', 'fade');
-        //визуальное изменение счётчика
-        sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
     }
 
-    setSlide();
-    console.log(sliderCounterCurrentNum);
+    function doSliderVisualAnimation(){
+        sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
+        sliderCounterCurrentNum.textContent = `${setZero(slideIndex+1)}`;
+        sliderField.style.transform = `translateX(-${offset}px)`;
+    }
 
-    sliderCounterNextButton.addEventListener('click', ()=>{
-        setSlide(currentSlideIndex+1);
+    function switchPrevSlide(step = 1){
+        if ((offset == 0) || slideIndex-step <= 0){
+            offset = +width.slice(0, -2) * (sliderSlides.length - 1);
+            slideIndex = sliderSlides.length - 1;
+        }
+        else {
+            offset -= +width.slice(0, -2);
+            slideIndex -= step;
+        }
+        resetAutoSwitch();
+        doSliderVisualAnimation();
+    }
+
+    function switchNextSlide(step = 1){
+        if ((offset == +width.slice(0, -2) * (sliderSlides.length - 1)) || slideIndex+step >= sliderSlides.length){
+            offset = 0;
+            slideIndex = 0;
+        }
+        else {
+            offset += +width.slice(0, -2);
+            slideIndex += step;
+        }
+        resetAutoSwitch();
+        doSliderVisualAnimation();
+    }
+
+    sliderCounterNextButton.addEventListener('click', () => {
+        switchNextSlide();
     });
-    
-    sliderCounterPrevButton.addEventListener('click', ()=>{
-        setSlide(currentSlideIndex-1);
+
+    sliderCounterPrevButton.addEventListener('click', () => {
+        switchPrevSlide();
     });
+
+
+    resetAutoSwitch();
+
     
+
+    //простенький слайдер(установить в html классы hide для всех слайдов, кроме первого
+
+    // let currentSlideIndex = 0,
+    //     totalSlideAmount = 0;
+
+    // sliderSlides.forEach(slide => {
+    //     totalSlideAmount += 1;
+    //     slide.classList.add('hide');
+        
+    // });
+
+    // //Начальные настройки слайдера по умолчанию
+    // // sliderSlides[0].classList.remove('hide');
+    // // sliderSlides[0].classList.add('show', 'fade');
+    // sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
+    // sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
+
+
+    // function setSlide(i = 0){
+    //     //прячем текущий слайд
+    //     sliderSlides[currentSlideIndex].classList.add('hide');
+    //     sliderSlides[currentSlideIndex].classList.remove('show');
+    //     //переключаемся на следующий/предыдущий слайд и показываем его
+    //     if (i >= totalSlideAmount){
+    //         i = 0;
+    //     }
+    //     else if (i < 0){
+    //         i = totalSlideAmount - 1;
+    //     }
+    //     currentSlideIndex = i;
+    //     sliderSlides[currentSlideIndex].classList.remove('hide');
+    //     sliderSlides[currentSlideIndex].classList.add('show', 'fade');
+    //     //визуальное изменение счётчика
+    //     sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
+    // }
+
+    // setSlide();
+    // console.log(sliderCounterCurrentNum);
+
+    // sliderCounterNextButton.addEventListener('click', ()=>{
+    //     setSlide(currentSlideIndex+1);
+    // });
+    
+    // sliderCounterPrevButton.addEventListener('click', ()=>{
+    //     setSlide(currentSlideIndex-1);
+    // });
+
+
+    // // function clearSelection() {
+    // //     if (window.getSelection) {
+    // //         window.getSelection().removeAllRanges();
+    // //     } else { // старый IE
+    // //         document.selection.empty();
+    // //     }
+    // // }
+    // // sliderCounterPrevButton.addEventListener('dblclick', clearSelection);
+    // // sliderCounterNextButton.addEventListener('dblclick', clearSelection);
 
 });
