@@ -304,6 +304,7 @@ d.addEventListener('DOMContentLoaded', () => {
     //slider 1, 2
 
     const sliderSlides = d.querySelectorAll('.offer__slide'),
+          sliderMain = d.querySelector('.offer__slider'),
           sliderCounterPrevButton = d.querySelector('.offer__slider-prev'),
           sliderCounterNextButton = d.querySelector('.offer__slider-next'),
           sliderCounterTotalNum = d.getElementById('total'),
@@ -324,9 +325,13 @@ d.addEventListener('DOMContentLoaded', () => {
     sliderField.style.transition = '1s all';
     sliderWrapper.style.overflow = 'hidden';
 
+
+
     sliderSlides.forEach((slide) => {
         slide.style.width = width;
     });
+
+    sliderMain.style.position = 'relative';
 
     //добавление автоматического перелистывания слайдера
     let switchInterval,
@@ -335,111 +340,93 @@ d.addEventListener('DOMContentLoaded', () => {
     function resetAutoSwitch(ms = 8000){
         if (autoSlidesSwitching == true){
             clearInterval(switchInterval);
-            switchInterval = setInterval(switchNextSlide, ms);
+            switchInterval = setInterval(setSlide, ms, slideIndex+1);
         }
     }
 
-    function doSliderVisualAnimation(){
-        sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
-        sliderCounterCurrentNum.textContent = `${setZero(slideIndex+1)}`;
-        sliderField.style.transform = `translateX(-${offset}px)`;
-    }
-
-    function switchPrevSlide(step = 1){
-        if ((offset == 0) || slideIndex-step < 0){
-            offset = +width.slice(0, -2) * (sliderSlides.length - 1);
+    function setSlide(i){
+        if (i < 0){
             slideIndex = sliderSlides.length - 1;
         }
         else {
-            offset -= +width.slice(0, -2);
-            slideIndex -= step;
+            if (i >= sliderSlides.length){
+                slideIndex = 0;
+            }
+            else {
+                slideIndex = i;
+            }
         }
+        offset = slideIndex * +width.slice(0, -2);
+        sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
+        sliderCounterCurrentNum.textContent = `${setZero(slideIndex+1)}`;
+        sliderField.style.transform = `translateX(-${offset}px)`;
+        //устанавливаем активную точку
+        sliderIndicators.childNodes.forEach(dot => {
+            dot.style.opacity = 0.5;
+        });
+        sliderIndicators.childNodes[slideIndex].style.opacity = 1;
+        //сбиваем таймер автоперелистывания
         resetAutoSwitch();
-        doSliderVisualAnimation();
     }
 
-    function switchNextSlide(step = 1){
-        if ((offset == +width.slice(0, -2) * (sliderSlides.length - 1)) || slideIndex+step >= sliderSlides.length){
-            offset = 0;
-            slideIndex = 0;
-        }
-        else {
-            offset += +width.slice(0, -2);
-            slideIndex += step;
-        }
-        resetAutoSwitch();
-        doSliderVisualAnimation();
-    }
 
     sliderCounterNextButton.addEventListener('click', () => {
-        switchNextSlide();
+        setSlide(slideIndex+1);
     });
 
     sliderCounterPrevButton.addEventListener('click', () => {
-        switchPrevSlide();
+        setSlide(slideIndex-1);
     });
 
+    //создаём обертку для точек
+    const sliderIndicators = d.createElement('ol');//ordered list
+    sliderIndicators.classList.add('slider-indicators');
+    sliderIndicators.style.cssText = `
+        position: absolute;
+        right: 0;
+        bottom: 10px;
+        left: 0;
+        z-index: 15;
+        display: flex;
+        justify-content: center;
+        margin-right: 15%;
+        margin-left: 15%;
+        list-style: none;
+    `;
+    sliderMain.append(sliderIndicators);
+    
 
+    //создаём точечки
+    for (let i = 0; i < sliderSlides.length; i++) {
+        const sliderDot = d.createElement('li');
+        sliderDot.setAttribute('data-slide-to', i);
+        sliderDot.style.cssText = `
+            box-sizing: content-box;
+            flex: 0 1 auto;
+            width: 30px;
+            height: 30px;
+            margin-right: 3px;
+            margin-left: 3px;
+            cursor: pointer;
+            background-color: #fff;
+            background-clip: padding-box;
+            border-top: solid transparent;
+            border-bottom: solid transparent;
+            border-radius: 15px;
+            opacity: 0.5;
+            transition: opacity .6s ease;
+        `;
+        sliderIndicators.append(sliderDot);
+        if (i == 0){
+            sliderDot.style.opacity = 1;
+        }
+    }
+
+    sliderIndicators.childNodes.forEach(dot => {
+        dot.addEventListener('click', () => {
+            setSlide(+dot.getAttribute('data-slide-to'));
+        });
+    });
     resetAutoSwitch();
-
-    
-
-    //простенький слайдер(установить в html классы hide для всех слайдов, кроме первого
-
-    // let currentSlideIndex = 0,
-    //     totalSlideAmount = 0;
-
-    // sliderSlides.forEach(slide => {
-    //     totalSlideAmount += 1;
-    //     slide.classList.add('hide');
-        
-    // });
-
-    // //Начальные настройки слайдера по умолчанию
-    // // sliderSlides[0].classList.remove('hide');
-    // // sliderSlides[0].classList.add('show', 'fade');
-    // sliderCounterTotalNum.textContent = `${setZero(totalSlideAmount)}`;
-    // sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
-
-
-    // function setSlide(i = 0){
-    //     //прячем текущий слайд
-    //     sliderSlides[currentSlideIndex].classList.add('hide');
-    //     sliderSlides[currentSlideIndex].classList.remove('show');
-    //     //переключаемся на следующий/предыдущий слайд и показываем его
-    //     if (i >= totalSlideAmount){
-    //         i = 0;
-    //     }
-    //     else if (i < 0){
-    //         i = totalSlideAmount - 1;
-    //     }
-    //     currentSlideIndex = i;
-    //     sliderSlides[currentSlideIndex].classList.remove('hide');
-    //     sliderSlides[currentSlideIndex].classList.add('show', 'fade');
-    //     //визуальное изменение счётчика
-    //     sliderCounterCurrentNum.textContent = `${setZero(currentSlideIndex + 1)}`;
-    // }
-
-    // setSlide();
-    // console.log(sliderCounterCurrentNum);
-
-    // sliderCounterNextButton.addEventListener('click', ()=>{
-    //     setSlide(currentSlideIndex+1);
-    // });
-    
-    // sliderCounterPrevButton.addEventListener('click', ()=>{
-    //     setSlide(currentSlideIndex-1);
-    // });
-
-
-    // // function clearSelection() {
-    // //     if (window.getSelection) {
-    // //         window.getSelection().removeAllRanges();
-    // //     } else { // старый IE
-    // //         document.selection.empty();
-    // //     }
-    // // }
-    // // sliderCounterPrevButton.addEventListener('dblclick', clearSelection);
-    // // sliderCounterNextButton.addEventListener('dblclick', clearSelection);
 
 });
