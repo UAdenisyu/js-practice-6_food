@@ -137,4 +137,4 @@ function slider(){
     resetAutoSwitch();
 }
 
-module.exports = slider;
+export default slider;

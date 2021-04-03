@@ -6,4 +6,4 @@ function remover(){
     shit.remove();
 }
 
-module.exports = remover;
+export default remover;
