@@ -1,6 +1,7 @@
 
 /* jslint node: true */
 /* jshint browser: true */
+
 "use strict";
 
 import calc from './modules/calc';
@@ -15,9 +16,8 @@ import timer from './modules/timer';
 
 const d = document;
 
+
 d.addEventListener('DOMContentLoaded', () => {
-
-
     calc();
     cards();
     forms();

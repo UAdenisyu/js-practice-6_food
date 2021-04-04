@@ -87,10 +87,17 @@ function calc(){
 
     constitutionFields.forEach(field => {
         field.addEventListener('input', () => {
-            calc.setParams(constitutionFields);
+            if (field.value.match(/\D/g)){
+                field.style.border = '1px solid red';
+                console.log(field);
+            }
+            else{
+                field.style.border = 'none';
+                console.log(field);
+                calc.setParams(constitutionFields);
+            }
         });
     });
-
 }
 
 export default calc;
