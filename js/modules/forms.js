@@ -1,9 +1,10 @@
+import {postData} from '../services/services';
+import {openModal} from '../modules/modal';
 
-
-function forms(){
+function forms(formsSelector, modalDialogSelector, modalSelector){
     const d = document;
     //forms
-    const forms = d.querySelectorAll('form');
+    const forms = d.querySelectorAll(formsSelector);
     const message = {
         loading : 'Идёт загрузка, пожалуйста, подождите',
         success : 'Данные получены',
@@ -21,7 +22,7 @@ function forms(){
         openModal();//открывает все модальные окна
 
         const thankyouModal = d.createElement('div');
-        thankyouModal.classList.add('modal__dialog');
+        thankyouModal.classList.add(modalDialogSelector);
         thankyouModal.innerHTML = `
             <div class="modal__content">
                 <div class="modal__close" data-close>×</div>
@@ -30,10 +31,10 @@ function forms(){
         `;
 
         thankyouModal.classList.add('fade');
-        d.querySelector('.modal').append(thankyouModal);
+        d.querySelector().append(thankyouModal);
         // проблема при повторном запуске модалки после отправления данных с предыдущей
         setTimeout(()=>{
-            thankyouModal.remove();
+            thankyouModal.remove(modalSelector);
             prevModalDialog.classList.remove('hide');
             prevModalDialog.classList.add('show');
             closeModal();
@@ -41,17 +42,6 @@ function forms(){
     } 
 
 
-    const postData = async (url, data) => {
-        const res = await fetch(url, {
-            method: "POST",
-            body: data,
-            headers: {
-                'Content-type': 'application/json'
-            }
-        });
-
-        return await res.json();//json-формат
-    };
 
 
     function bingPostData(form){

@@ -1,4 +1,4 @@
-function slider(){
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}){
     function setZero(num){
         if (num >= 0 && num < 10){
             return '0' + num;
@@ -10,14 +10,14 @@ function slider(){
     const d = document;
     //slider 1, 2
 
-    const sliderSlides = d.querySelectorAll('.offer__slide'),
-          sliderMain = d.querySelector('.offer__slider'),
-          sliderCounterPrevButton = d.querySelector('.offer__slider-prev'),
-          sliderCounterNextButton = d.querySelector('.offer__slider-next'),
-          sliderCounterTotalNum = d.getElementById('total'),
-          sliderCounterCurrentNum = d.getElementById('current'),
-          sliderWrapper = d.querySelector('.offer__slider-wrapper'),
-          sliderField = d.querySelector('.offer__slider-inner'),
+    const sliderSlides = d.querySelectorAll(slide),
+          sliderMain = d.querySelector(container),
+          sliderCounterPrevButton = d.querySelector(prevArrow),
+          sliderCounterNextButton = d.querySelector(nextArrow),
+          sliderCounterTotalNum = d.querySelector(totalCounter),
+          sliderCounterCurrentNum = d.querySelector(currentCounter),
+          sliderWrapper = d.querySelector(wrapper),
+          sliderField = d.querySelector(field),
           width = window.getComputedStyle(sliderWrapper).width;
 
     let slideIndex = 0;

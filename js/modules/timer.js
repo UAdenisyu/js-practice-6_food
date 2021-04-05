@@ -1,8 +1,6 @@
-function timer(){
+function timer(deadLine, timerSelector){
     const d = document;
     //timer
-
-    const deadLine = '2021-04-18';
 
     function getTimeRemaining(endTime){
         const t = Date.parse(endTime) - Date.parse(new Date()),//miliseconds differense
@@ -27,6 +25,10 @@ function timer(){
             return num;
         }
     }
+
+    //Следующий код не рационален, 
+    //показано использование локальной
+    //видимости функций и переменных
 
     function setTimer (selector, time) {
         const timer = d.querySelector(selector),
@@ -53,7 +55,7 @@ function timer(){
         
     }
 
-    setTimer('.timer', deadLine);
+    setTimer(timerSelector, deadLine);
 }
 
 export default timer;

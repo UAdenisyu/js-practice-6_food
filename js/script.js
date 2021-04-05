@@ -14,16 +14,22 @@ import tabs from './modules/tabs';
 import timer from './modules/timer';
 
 
-const d = document;
-
-
-d.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     calc();
     cards();
-    forms();
-    modal();
-    remover();
-    slider();
-    tabs();
-    timer();
+    forms('form','modal__dialog', '.modal');
+    modal('[data-modal]', '.modal');
+    remover('.sidepanel');
+    slider({
+        container: '.offer__slider',
+        slide: '.offer__slide',
+        nextArrow: '.offer__slider-next',
+        prevArrow: '.offer__slider-prev',
+        totalCounter: '#total',
+        currentCounter: '#current',
+        wrapper: '.offer__slider-wrapper',
+        field: '.offer__slider-inner'
+    });
+    tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
+    timer('2021-04-18', '.timer');
 });
